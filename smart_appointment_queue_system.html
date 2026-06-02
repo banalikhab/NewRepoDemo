@@ -1,0 +1,1340 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --teal:#0d9488;--teal-light:#14b8a6;--teal-dark:#0f766e;--teal-50:#f0fdfa;--teal-100:#ccfbf1;
+    --blue:#1d4ed8;--blue-light:#3b82f6;--blue-50:#eff6ff;--blue-100:#dbeafe;
+    --cyan:#0891b2;--cyan-light:#06b6d4;
+    --bg:#f0fdfa;--surface:#ffffff;--surface2:#f8fafc;
+    --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+    --border:#e2e8f0;--border2:#cbd5e1;
+    --success:#10b981;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;
+    --radius:12px;--radius-sm:8px;--radius-lg:16px;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08);
+    --font:'Segoe UI',system-ui,sans-serif;
+  }
+  body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5}
+  
+  /* Layout */
+  .app-shell{display:flex;flex-direction:column;min-height:100vh}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+  .logo{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;color:var(--teal-dark)}
+  .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--teal),var(--cyan-light));border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--blue-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+  .role-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.3px}
+  .role-admin{background:var(--teal-100);color:var(--teal-dark)}
+  .role-customer{background:var(--blue-100);color:var(--blue)}
+  
+  .main-layout{display:flex;flex:1}
+  .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:12px 8px;display:flex;flex-direction:column;gap:2px;flex-shrink:0}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;border:none;background:none;width:100%;text-align:left}
+  .nav-item:hover{background:var(--teal-50);color:var(--teal-dark)}
+  .nav-item.active{background:linear-gradient(135deg,var(--teal-50),var(--blue-50));color:var(--teal-dark);font-weight:600}
+  .nav-item i{font-size:16px;width:20px}
+  .nav-section{padding:8px 12px 4px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-top:8px}
+  
+  .content{flex:1;padding:20px;overflow-y:auto;max-height:calc(100vh - 56px)}
+  
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+  .card-lg{padding:20px}
+  .card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .card-title i{color:var(--teal)}
+  
+  /* Stat cards */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .stat-val{font-size:26px;font-weight:800;line-height:1.1;margin-bottom:2px}
+  .stat-label{font-size:11px;color:var(--text2);font-weight:500}
+  .stat-change{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:3px}
+  .stat-up{color:var(--success)}.stat-down{color:var(--danger)}
+  
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+  .btn-primary{background:var(--teal);color:#fff}
+  .btn-primary:hover{background:var(--teal-dark)}
+  .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+  .btn-outline:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
+  .btn-sm{padding:5px 10px;font-size:12px}
+  .btn-danger{background:#fee2e2;color:var(--danger);border:1px solid #fecaca}
+  .btn-danger:hover{background:var(--danger);color:#fff}
+  .btn-success{background:#d1fae5;color:var(--success);border:1px solid #a7f3d0}
+  .btn-success:hover{background:var(--success);color:#fff}
+  .btn-info{background:var(--blue-100);color:var(--blue);border:1px solid #bfdbfe}
+  
+  /* Badges */
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:600}
+  .badge-success{background:#d1fae5;color:#065f46}
+  .badge-warning{background:#fef3c7;color:#92400e}
+  .badge-danger{background:#fee2e2;color:#991b1b}
+  .badge-info{background:var(--blue-100);color:#1e40af}
+  .badge-teal{background:var(--teal-100);color:var(--teal-dark)}
+  .badge-gray{background:#f1f5f9;color:var(--text2)}
+  
+  /* Tables */
+  .table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:var(--surface2);padding:10px 14px;text-align:left;font-weight:600;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap}
+  td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text)}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--teal-50)}
+  
+  /* Forms */
+  .form-group{margin-bottom:14px}
+  label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
+  input,select,textarea{width:100%;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;font-family:var(--font)}
+  input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+  
+  /* Login screen */
+  .auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#f0fdfa 0%,#eff6ff 100%);padding:20px}
+  .auth-card{background:var(--surface);border-radius:var(--radius-lg);padding:36px 32px;width:100%;max-width:400px;box-shadow:var(--shadow-md);border:1px solid var(--border)}
+  .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:24px;justify-content:center}
+  .auth-logo-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--teal),var(--cyan-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+  .auth-title{font-size:22px;font-weight:800;color:var(--text);text-align:center;margin-bottom:6px}
+  .auth-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:24px}
+  
+  /* Tabs */
+  .tabs{display:flex;gap:2px;background:var(--surface2);border-radius:var(--radius-sm);padding:3px;margin-bottom:16px}
+  .tab{flex:1;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;text-align:center;border:none;background:none;color:var(--text2);transition:all .15s}
+  .tab.active{background:var(--surface);color:var(--teal-dark);box-shadow:var(--shadow)}
+  
+  /* Queue */
+  .queue-token{background:linear-gradient(135deg,var(--teal),var(--cyan));border-radius:var(--radius);padding:20px;color:#fff;text-align:center;margin-bottom:12px}
+  .queue-number{font-size:52px;font-weight:900;line-height:1}
+  .queue-label{font-size:12px;opacity:.8;margin-top:4px}
+  
+  /* Slot grid */
+  .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:16px}
+  .slot{padding:8px 6px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s;background:var(--surface)}
+  .slot:hover:not(.taken){border-color:var(--teal);color:var(--teal);background:var(--teal-50)}
+  .slot.selected{border-color:var(--teal);background:var(--teal);color:#fff}
+  .slot.taken{background:var(--surface2);color:var(--text3);cursor:not-allowed;text-decoration:line-through}
+  
+  /* Chart */
+  .bar-chart{display:flex;align-items:flex-end;gap:6px;height:100px;margin-top:8px}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+  .bar{width:100%;border-radius:4px 4px 0 0;transition:height .3s;cursor:pointer;min-height:4px}
+  .bar:hover{filter:brightness(1.1)}
+  .bar-label{font-size:10px;color:var(--text3)}
+  .bar-val{font-size:10px;font-weight:700;color:var(--text2)}
+  
+  /* Progress */
+  .progress{height:8px;background:var(--border);border-radius:20px;overflow:hidden;margin-top:6px}
+  .progress-fill{height:100%;border-radius:20px;transition:width .3s}
+  
+  /* QR code */
+  .qr-mock{width:100px;height:100px;background:repeating-linear-gradient(0deg,#000 0px,#000 4px,#fff 4px,#fff 8px),repeating-linear-gradient(90deg,#000 0px,#000 4px,#fff 4px,#fff 8px);background-blend-mode:multiply;border-radius:4px;border:3px solid var(--text)}
+  
+  /* AI insight */
+  .ai-card{background:linear-gradient(135deg,#f0fdf4,#eff6ff);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+  .ai-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .ai-dot{width:8px;height:8px;border-radius:50%;background:var(--teal-light);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  
+  /* Notification */
+  .notif{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;font-size:13px;border-left:3px solid var(--teal)}
+  .notif-time{font-size:11px;color:var(--text3);white-space:nowrap;margin-left:auto}
+  
+  /* Misc */
+  .divider{height:1px;background:var(--border);margin:16px 0}
+  .flex{display:flex}.gap-2{gap:8px}.gap-3{gap:12px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .mb-1{margin-bottom:4px}.mb-2{margin-bottom:8px}.mb-3{margin-bottom:12px}.mb-4{margin-bottom:16px}
+  .mt-2{margin-top:8px}.mt-3{margin-top:12px}
+  .text-sm{font-size:12px}.text-muted{color:var(--text2)}.text-xs{font-size:11px}
+  .font-bold{font-weight:700}.font-semibold{font-weight:600}
+  .w-full{width:100%}
+  .overflow-hidden{overflow:hidden}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+  .chip.active{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+  .empty i{font-size:36px;display:block;margin-bottom:8px;opacity:.4}
+  h1{font-size:20px;font-weight:800;color:var(--text)}
+  h2{font-size:16px;font-weight:700}
+  h3{font-size:14px;font-weight:600}
+  .page-header{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .page-header-left h1{margin-bottom:2px}
+  .page-header-left p{font-size:13px;color:var(--text2)}
+  
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+  
+  /* Switch */
+  .switch{position:relative;width:36px;height:20px;display:inline-block}
+  .switch input{opacity:0;width:0;height:0}
+  .switch-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border2);border-radius:20px;transition:.15s}
+  .switch-slider:before{position:absolute;content:'';height:14px;width:14px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.15s}
+  input:checked+.switch-slider{background:var(--teal)}
+  input:checked+.switch-slider:before{transform:translateX(16px)}
+
+  /* mini sparkline */
+  .sparkline{display:flex;align-items:flex-end;gap:2px;height:28px}
+  .spark-bar{width:6px;border-radius:2px 2px 0 0;background:var(--teal-light);opacity:.7}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {useState,useEffect,useMemo,useCallback}=React;
+const h=React.createElement;
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+const DEMO_USERS=[
+  {id:1,name:'Dr. Sarah Admin',email:'admin@clinic.com',pass:'admin123',role:'admin',avatar:'SA',org:'CareFlow Clinic'},
+  {id:2,name:'John Customer',email:'john@email.com',pass:'john123',role:'customer',avatar:'JC',org:null},
+  {id:3,name:'Priya Sharma',email:'priya@email.com',pass:'priya123',role:'customer',avatar:'PS',org:null},
+];
+
+const SERVICES=['General Consultation','Dental Checkup','Eye Exam','Physiotherapy','Lab Test'];
+const DOCTORS=['Dr. A. Kumar','Dr. S. Roy','Dr. M. Patel','Dr. R. Singh'];
+
+const initialSlots=[
+  {id:'s1',time:'09:00 AM',date:'2026-05-28',service:'General Consultation',doctor:'Dr. A. Kumar',duration:30,status:'available'},
+  {id:'s2',time:'09:30 AM',date:'2026-05-28',service:'Dental Checkup',doctor:'Dr. S. Roy',duration:45,status:'booked'},
+  {id:'s3',time:'10:00 AM',date:'2026-05-28',service:'Eye Exam',doctor:'Dr. M. Patel',duration:30,status:'available'},
+  {id:'s4',time:'10:30 AM',date:'2026-05-28',service:'General Consultation',doctor:'Dr. A. Kumar',duration:30,status:'available'},
+  {id:'s5',time:'11:00 AM',date:'2026-05-28',service:'Physiotherapy',doctor:'Dr. R. Singh',duration:60,status:'booked'},
+  {id:'s6',time:'11:30 AM',date:'2026-05-28',service:'Lab Test',doctor:'Dr. S. Roy',duration:20,status:'available'},
+  {id:'s7',time:'12:00 PM',date:'2026-05-28',service:'General Consultation',doctor:'Dr. A. Kumar',duration:30,status:'available'},
+  {id:'s8',time:'02:00 PM',date:'2026-05-28',service:'Dental Checkup',doctor:'Dr. S. Roy',duration:45,status:'available'},
+  {id:'s9',time:'02:30 PM',date:'2026-05-28',service:'Eye Exam',doctor:'Dr. M. Patel',duration:30,status:'booked'},
+  {id:'s10',time:'03:00 PM',date:'2026-05-28',service:'Physiotherapy',doctor:'Dr. R. Singh',duration:60,status:'available'},
+  {id:'s11',time:'03:30 PM',date:'2026-05-28',service:'Lab Test',doctor:'Dr. S. Roy',duration:20,status:'available'},
+  {id:'s12',time:'04:00 PM',date:'2026-05-28',service:'General Consultation',doctor:'Dr. A. Kumar',duration:30,status:'booked'},
+];
+
+const initialBookings=[
+  {id:'b1',patientName:'John Customer',patientId:2,slotId:'s2',service:'Dental Checkup',doctor:'Dr. S. Roy',date:'2026-05-28',time:'09:30 AM',status:'confirmed',token:'A-001',qr:true,createdAt:'2026-05-25'},
+  {id:'b2',patientName:'Priya Sharma',patientId:3,slotId:'s5',service:'Physiotherapy',doctor:'Dr. R. Singh',date:'2026-05-28',time:'11:00 AM',status:'pending',token:'A-002',qr:true,createdAt:'2026-05-26'},
+  {id:'b3',patientName:'John Customer',patientId:2,slotId:'s9',service:'Eye Exam',doctor:'Dr. M. Patel',date:'2026-05-28',time:'02:30 PM',status:'confirmed',token:'A-003',qr:true,createdAt:'2026-05-27'},
+  {id:'b4',patientName:'Priya Sharma',patientId:3,slotId:'s12',service:'General Consultation',doctor:'Dr. A. Kumar',date:'2026-05-28',time:'04:00 PM',status:'pending',token:'A-004',qr:true,createdAt:'2026-05-27'},
+];
+
+const analyticsData={
+  daily:[12,18,14,22,19,27,24],
+  weekly:[85,92,78,110,98,120,105],
+  monthly:[320,340,298,412,388,445,420],
+  hours:{
+    '8AM':3,'9AM':8,'10AM':14,'11AM':18,'12PM':10,
+    '1PM':6,'2PM':15,'3PM':17,'4PM':11,'5PM':5
+  },
+  services:{
+    'General':35,'Dental':22,'Eye':18,'Physio':14,'Lab':11
+  },
+  peakHours:['10:00 AM–11:00 AM','02:30 PM–03:30 PM'],
+  avgWait:12,
+  satisfaction:4.6,
+};
+
+const aiInsights=[
+  {icon:'ti-brain',color:'#0d9488',title:'Peak Demand Predicted',text:'Expect 40% more bookings Tue–Thu 10–11 AM. Recommend adding 2 extra slots.',action:'Add Slots'},
+  {icon:'ti-trending-up',color:'#1d4ed8',title:'Revenue Opportunity',text:'Lab Tests underutilised on Fridays. Offering 15% discount could increase fill rate by 60%.', action:'Create Offer'},
+  {icon:'ti-clock-hour-4',color:'#f59e0b',title:'Queue Bottleneck',text:'Dr. A. Kumar\'s queue averages 22 min wait on Mondays. Consider adding a backup provider.',action:'View Queue'},
+  {icon:'ti-calendar-check',color:'#10b981',title:'Optimal Slot Suggestion',text:'Scheduling Physiotherapy at 3 PM shows 95% fill rate vs 67% at 9 AM.',action:'Reschedule'},
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function statusBadge(status){
+  const map={confirmed:'badge-success',pending:'badge-warning',cancelled:'badge-danger',available:'badge-teal',booked:'badge-info'};
+  return h('span',{className:`badge ${map[status]||'badge-gray'}`},status);
+}
+
+// ── Login Screen ──────────────────────────────────────────────────────────────
+function LoginScreen({onLogin}){
+  const[email,setEmail]=useState('');
+  const[pass,setPass]=useState('');
+  const[err,setErr]=useState('');
+  const[activeRole,setActiveRole]=useState('admin');
+  
+  const demoLogin=(role)=>{
+    const u=DEMO_USERS.find(x=>x.role===role);
+    onLogin(u);
+  };
+  
+  const handleLogin=()=>{
+    const u=DEMO_USERS.find(x=>x.email===email&&x.pass===pass);
+    if(u) onLogin(u);
+    else setErr('Invalid credentials. Use demo buttons below.');
+  };
+  
+  return h('div',{className:'auth-screen'},
+    h('div',{className:'auth-card'},
+      h('div',{className:'auth-logo'},
+        h('div',{className:'auth-logo-icon'},h('i',{className:'ti ti-calendar-time'})),
+        h('div',null,
+          h('div',{style:{fontWeight:800,fontSize:18,color:'var(--teal-dark)'}}, 'QueueFlow'),
+          h('div',{style:{fontSize:11,color:'var(--text2)'}}, 'Smart Appointment System')
+        )
+      ),
+      h('h1',{className:'auth-title'},'Welcome Back'),
+      h('p',{className:'auth-sub'},'Sign in to manage your appointments'),
+      h('div',{className:'form-group'},h('label',null,'Email'),h('input',{type:'email',value:email,onChange:e=>setEmail(e.target.value),placeholder:'your@email.com'})),
+      h('div',{className:'form-group'},h('label',null,'Password'),h('input',{type:'password',value:pass,onChange:e=>setPass(e.target.value),placeholder:'••••••••'})),
+      err&&h('div',{style:{color:'var(--danger)',fontSize:12,marginBottom:12}},h('i',{className:'ti ti-alert-circle'}),' ',err),
+      h('button',{className:'btn btn-primary w-full',onClick:handleLogin,style:{justifyContent:'center',padding:'10px'}},
+        h('i',{className:'ti ti-login'}), ' Sign In'
+      ),
+      h('div',{className:'divider'}),
+      h('p',{style:{fontSize:12,color:'var(--text2)',marginBottom:8,textAlign:'center',fontWeight:600}}, '⚡ Quick Demo Access'),
+      h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}},
+        h('button',{className:'btn btn-outline w-full',style:{justifyContent:'center',fontSize:12},onClick:()=>demoLogin('admin')},
+          h('i',{className:'ti ti-shield'}), ' Admin Demo'
+        ),
+        h('button',{className:'btn btn-outline w-full',style:{justifyContent:'center',fontSize:12},onClick:()=>demoLogin('customer')},
+          h('i',{className:'ti ti-user'}), ' Customer Demo'
+        )
+      ),
+      h('div',{style:{marginTop:12,fontSize:11,color:'var(--text3)',textAlign:'center'}},
+        'JWT Auth · bcrypt · Role-based Access Control'
+      )
+    )
+  );
+}
+
+// ── Top Bar ───────────────────────────────────────────────────────────────────
+function TopBar({user,onLogout,notifCount}){
+  return h('div',{className:'topbar'},
+    h('div',{className:'logo'},
+      h('div',{className:'logo-icon'},h('i',{className:'ti ti-calendar-time'})),
+      'QueueFlow'
+    ),
+    h('div',{style:{fontSize:12,color:'var(--text2)',marginLeft:8}}, user.org&&`— ${user.org}`),
+    h('div',{className:'topbar-right'},
+      h('button',{className:'btn btn-outline btn-sm',style:{position:'relative'}},
+        h('i',{className:'ti ti-bell'}),
+        notifCount>0&&h('span',{style:{position:'absolute',top:-4,right:-4,width:16,height:16,borderRadius:'50%',background:'var(--danger)',color:'#fff',fontSize:9,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700}},notifCount)
+      ),
+      h('div',{style:{width:1,height:24,background:'var(--border)'},}),
+      h('div',{className:'avatar'},user.avatar),
+      h('div',null,
+        h('div',{style:{fontSize:13,fontWeight:600,lineHeight:1.2}},user.name),
+        h('span',{className:`role-badge role-${user.role}`},user.role)
+      ),
+      h('button',{className:'btn btn-outline btn-sm',onClick:onLogout},h('i',{className:'ti ti-logout'}))
+    )
+  );
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function Sidebar({user,page,setPage}){
+  const adminNav=[
+    {key:'dashboard',label:'Dashboard',icon:'ti-layout-dashboard'},
+    {key:'slots',label:'Manage Slots',icon:'ti-calendar-plus'},
+    {key:'bookings',label:'All Bookings',icon:'ti-list-check'},
+    {key:'queue',label:'Live Queue',icon:'ti-sort-ascending-numbers'},
+    {key:'patients',label:'Patients',icon:'ti-users'},
+    {key:'analytics',label:'Analytics',icon:'ti-chart-bar'},
+    {key:'ai',label:'AI Insights',icon:'ti-brain'},
+    {key:'settings',label:'Settings',icon:'ti-settings'},
+  ];
+  const custNav=[
+    {key:'home',label:'Dashboard',icon:'ti-layout-dashboard'},
+    {key:'book',label:'Book Appointment',icon:'ti-calendar-plus'},
+    {key:'mybookings',label:'My Bookings',icon:'ti-list-check'},
+    {key:'queue-status',label:'Queue Status',icon:'ti-sort-ascending-numbers'},
+    {key:'history',label:'History',icon:'ti-history'},
+  ];
+  const nav=user.role==='admin'?adminNav:custNav;
+  
+  return h('div',{className:'sidebar'},
+    h('div',{className:'nav-section'},'Navigation'),
+    nav.map(n=>
+      h('button',{key:n.key,className:`nav-item ${page===n.key?'active':''}`,onClick:()=>setPage(n.key)},
+        h('i',{className:`ti ${n.icon}`}), n.label
+      )
+    )
+  );
+}
+
+// ── Admin Dashboard ───────────────────────────────────────────────────────────
+function AdminDashboard({bookings}){
+  const total=bookings.length;
+  const confirmed=bookings.filter(b=>b.status==='confirmed').length;
+  const pending=bookings.filter(b=>b.status==='pending').length;
+  
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals=[12,18,14,22,19,27,24];
+  const maxV=Math.max(...vals);
+  
+  const recent=bookings.slice(-4).reverse();
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},
+        h('h1',null,'Admin Dashboard'),
+        h('p',null,'Thursday, 28 May 2026 · CareFlow Clinic')
+      ),
+      h('div',{style:{display:'flex',gap:8}},
+        h('button',{className:'btn btn-outline btn-sm'},h('i',{className:'ti ti-download'}),' Export'),
+        h('button',{className:'btn btn-primary btn-sm'},h('i',{className:'ti ti-plus'}),' Add Slot')
+      )
+    ),
+    h('div',{className:'stats-grid'},
+      [
+        {label:'Total Today',val:total+18,icon:'ti-calendar',color:'var(--teal)',change:'+12%',up:true},
+        {label:'Confirmed',val:confirmed+14,icon:'ti-circle-check',color:'var(--success)',change:'+8%',up:true},
+        {label:'Pending',val:pending+3,icon:'ti-clock',color:'var(--warning)',change:'-3%',up:false},
+        {label:'Avg Wait',val:'12m',icon:'ti-hourglass',color:'var(--info)',change:'-2m',up:true},
+        {label:'Revenue Today',val:'₹8,240',icon:'ti-currency-rupee',color:'var(--blue)',change:'+18%',up:true},
+        {label:'Satisfaction',val:'4.6★',icon:'ti-star',color:'#f59e0b',change:'+0.2',up:true},
+      ].map((s,i)=>
+        h('div',{key:i,className:'stat-card'},
+          h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:6}},
+            h('div',{style:{width:32,height:32,borderRadius:8,background:s.color+'18',display:'flex',alignItems:'center',justifyContent:'center'}},
+              h('i',{className:`ti ${s.icon}`,style:{color:s.color,fontSize:16}})
+            ),
+            h('div',{className:'sparkline'},
+              [3,5,4,7,6,8,s.val=='4.6★'?8:7].map((v,j)=>
+                h('div',{key:j,className:'spark-bar',style:{height:`${v/8*100}%`,background:s.color,opacity:.5+j*.07}})
+              )
+            )
+          ),
+          h('div',{className:'stat-val',style:{color:s.color}},s.val),
+          h('div',{className:'stat-label'},s.label),
+          h('div',{className:`stat-change ${s.up?'stat-up':'stat-down'}`},
+            h('i',{className:`ti ti-trending-${s.up?'up':'down'}`}), s.change
+          )
+        )
+      )
+    ),
+    h('div',{className:'grid-2',style:{marginBottom:16}},
+      h('div',{className:'card'},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-chart-bar'}),'This Week — Bookings'),
+        h('div',{className:'bar-chart'},
+          vals.map((v,i)=>
+            h('div',{key:i,className:'bar-wrap'},
+              h('div',{className:'bar-val'},v),
+              h('div',{className:'bar',style:{
+                height:`${v/maxV*80}px`,
+                background:`linear-gradient(180deg, var(--teal) 0%, var(--cyan-light) 100%)`
+              }}),
+              h('div',{className:'bar-label'},days[i])
+            )
+          )
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-chart-donut'}),'Services Distribution'),
+        h('div',null,
+          Object.entries(analyticsData.services).map(([svc,pct])=>
+            h('div',{key:svc,style:{marginBottom:10}},
+              h('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:3}},
+                h('span',{style:{fontWeight:600}},svc),
+                h('span',{style:{color:'var(--text2)'}},`${pct}%`)
+              ),
+              h('div',{className:'progress'},
+                h('div',{className:'progress-fill',style:{
+                  width:`${pct}%`,
+                  background:`linear-gradient(90deg,var(--teal),var(--cyan-light))`
+                }})
+              )
+            )
+          )
+        )
+      )
+    ),
+    h('div',{className:'card'},
+      h('div',{className:'card-title'},h('i',{className:'ti ti-clock'}),'Recent Bookings'),
+      h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            ['Token','Patient','Service','Doctor','Time','Status','Actions'].map(c=>h('th',{key:c},c))
+          )),
+          h('tbody',null,
+            bookings.slice(0,6).map(b=>
+              h('tr',{key:b.id},
+                h('td',null,h('span',{style:{fontWeight:700,color:'var(--teal)'}},b.token)),
+                h('td',null,h('div',{style:{display:'flex',alignItems:'center',gap:6}},
+                  h('div',{style:{width:26,height:26,borderRadius:'50%',background:'var(--teal-50)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:'var(--teal-dark)'}},b.patientName[0]),
+                  b.patientName
+                )),
+                h('td',null,h('span',{className:'badge badge-teal'},b.service)),
+                h('td',null,h('span',{style:{color:'var(--text2)'}},b.doctor)),
+                h('td',null,b.time),
+                h('td',null,statusBadge(b.status)),
+                h('td',null,h('div',{style:{display:'flex',gap:4}},
+                  h('button',{className:'btn btn-success btn-sm'},h('i',{className:'ti ti-check'})),
+                  h('button',{className:'btn btn-danger btn-sm'},h('i',{className:'ti ti-x'}))
+                ))
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── Slot Management ───────────────────────────────────────────────────────────
+function SlotManager({slots,setSlots}){
+  const[filter,setFilter]=useState('all');
+  
+  const filtered=filter==='all'?slots:slots.filter(s=>s.status===filter);
+  
+  const toggleStatus=(id)=>{
+    setSlots(prev=>prev.map(s=>s.id===id?{...s,status:s.status==='available'?'booked':'available'}:s));
+  };
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},
+        h('h1',null,'Manage Slots'),
+        h('p',null,'Create, edit, and manage appointment time slots')
+      ),
+      h('button',{className:'btn btn-primary'},h('i',{className:'ti ti-plus'}),' Add New Slot')
+    ),
+    h('div',{style:{display:'flex',gap:8,marginBottom:16}},
+      ['all','available','booked'].map(f=>
+        h('button',{key:f,className:`chip ${filter===f?'active':''}`,onClick:()=>setFilter(f)},
+          f==='all'?'All Slots':f==='available'?'Available':'Booked'
+        )
+      )
+    ),
+    h('div',{className:'table-wrap'},
+      h('table',null,
+        h('thead',null,h('tr',null,
+          ['Slot ID','Time','Date','Service','Doctor','Duration','Status','Toggle'].map(c=>h('th',{key:c},c))
+        )),
+        h('tbody',null,
+          filtered.map(s=>
+            h('tr',{key:s.id},
+              h('td',null,h('span',{style:{fontFamily:'monospace',fontSize:12,background:'var(--surface2)',padding:'2px 6px',borderRadius:4}},s.id)),
+              h('td',null,h('strong',null,s.time)),
+              h('td',null,s.date),
+              h('td',null,h('span',{className:'badge badge-teal'},s.service)),
+              h('td',null,s.doctor),
+              h('td',null,`${s.duration} min`),
+              h('td',null,statusBadge(s.status)),
+              h('td',null,
+                h('label',{className:'switch'},
+                  h('input',{type:'checkbox',checked:s.status==='available',onChange:()=>toggleStatus(s.id)}),
+                  h('span',{className:'switch-slider'})
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── All Bookings (Admin) ──────────────────────────────────────────────────────
+function AllBookings({bookings,setBookings}){
+  const[search,setSearch]=useState('');
+  const filtered=bookings.filter(b=>
+    b.patientName.toLowerCase().includes(search.toLowerCase())||
+    b.service.toLowerCase().includes(search.toLowerCase())||
+    b.token.toLowerCase().includes(search.toLowerCase())
+  );
+  
+  const updateStatus=(id,status)=>{
+    setBookings(prev=>prev.map(b=>b.id===id?{...b,status}:b));
+  };
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},
+        h('h1',null,'All Bookings'),
+        h('p',null,'Approve, reject, and manage all appointments')
+      )
+    ),
+    h('div',{style:{display:'flex',gap:8,marginBottom:16}},
+      h('input',{placeholder:'Search patient, service, token...',value:search,onChange:e=>setSearch(e.target.value),style:{maxWidth:280}}),
+      h('select',{style:{width:'auto',minWidth:140}},
+        h('option',null,'All Dates'),
+        h('option',null,'Today'),
+        h('option',null,'This Week')
+      )
+    ),
+    h('div',{className:'table-wrap'},
+      h('table',null,
+        h('thead',null,h('tr',null,
+          ['Token','Patient','Service','Doctor','Date','Time','Status','QR','Actions'].map(c=>h('th',{key:c},c))
+        )),
+        h('tbody',null,
+          filtered.length===0
+            ?h('tr',null,h('td',{colSpan:9},h('div',{className:'empty'},h('i',{className:'ti ti-search'}),'No bookings found')))
+            :filtered.map(b=>
+              h('tr',{key:b.id},
+                h('td',null,h('span',{style:{fontWeight:700,color:'var(--teal)',fontSize:13}},b.token)),
+                h('td',null,h('div',{style:{display:'flex',alignItems:'center',gap:6}},
+                  h('div',{style:{width:28,height:28,borderRadius:'50%',background:'var(--teal-50)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,color:'var(--teal-dark)'}},b.patientName[0]),
+                  h('div',null,h('div',{style:{fontWeight:600}},b.patientName),h('div',{style:{fontSize:11,color:'var(--text3)'}},`Booked ${b.createdAt}`))
+                )),
+                h('td',null,b.service),
+                h('td',null,h('span',{style:{color:'var(--text2)'}},b.doctor)),
+                h('td',null,b.date),
+                h('td',null,b.time),
+                h('td',null,statusBadge(b.status)),
+                h('td',null,b.qr&&h('div',{style:{width:28,height:28,background:'repeating-linear-gradient(0deg,#000 0px,#000 3px,#fff 3px,#fff 6px),repeating-linear-gradient(90deg,#000 0px,#000 3px,#fff 3px,#fff 6px)',backgroundBlendMode:'multiply',borderRadius:3,border:'2px solid var(--text)'}})),
+                h('td',null,h('div',{style:{display:'flex',gap:4}},
+                  b.status==='pending'&&h('button',{className:'btn btn-success btn-sm',onClick:()=>updateStatus(b.id,'confirmed')},h('i',{className:'ti ti-check'})),
+                  b.status!=='cancelled'&&h('button',{className:'btn btn-danger btn-sm',onClick:()=>updateStatus(b.id,'cancelled')},h('i',{className:'ti ti-x'}))
+                ))
+              )
+            )
+        )
+      )
+    )
+  );
+}
+
+// ── Live Queue ────────────────────────────────────────────────────────────────
+function LiveQueue({bookings}){
+  const[calling,setCalling]=useState('A-001');
+  const queue=bookings.filter(b=>b.status!=='cancelled');
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},
+        h('h1',null,'Live Queue Monitor'),
+        h('p',null,'Real-time queue status · Auto-assigns tokens · Cron-based cleanup')
+      ),
+      h('div',{style:{display:'flex',alignItems:'center',gap:6}},
+        h('span',{style:{width:8,height:8,borderRadius:'50%',background:'var(--success)',display:'inline-block',animation:'pulse 2s infinite'}}),
+        h('span',{style:{fontSize:12,color:'var(--success)',fontWeight:600}}, 'LIVE')
+      )
+    ),
+    h('div',{className:'grid-3',style:{marginBottom:16}},
+      [
+        {label:'Now Serving',val:calling,color:'var(--teal)',icon:'ti-volume'},
+        {label:'In Queue',val:queue.length,color:'var(--warning)',icon:'ti-users'},
+        {label:'Avg Wait',val:'~12 min',color:'var(--info)',icon:'ti-clock'},
+      ].map((s,i)=>
+        h('div',{key:i,className:'stat-card',style:{textAlign:'center'}},
+          h('i',{className:`ti ${s.icon}`,style:{fontSize:24,color:s.color,display:'block',marginBottom:6}}),
+          h('div',{className:'stat-val',style:{color:s.color,fontSize:28}},s.val),
+          h('div',{className:'stat-label'},s.label)
+        )
+      )
+    ),
+    h('div',{className:'card'},
+      h('div',{className:'card-title'},h('i',{className:'ti ti-list-numbers'}),'Queue List'),
+      h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            ['Token','Patient','Service','Time','Status','Action'].map(c=>h('th',{key:c},c))
+          )),
+          h('tbody',null,
+            queue.map(b=>
+              h('tr',{key:b.id},
+                h('td',null,
+                  h('div',{style:{
+                    display:'inline-flex',alignItems:'center',justifyContent:'center',
+                    width:56,height:32,borderRadius:6,
+                    background:b.token===calling?'var(--teal)':'var(--surface2)',
+                    color:b.token===calling?'#fff':'var(--text)',
+                    fontWeight:700,fontSize:13
+                  }},b.token)
+                ),
+                h('td',null,b.patientName),
+                h('td',null,b.service),
+                h('td',null,b.time),
+                h('td',null,b.token===calling
+                  ?h('span',{className:'badge badge-success'},h('i',{className:'ti ti-volume'}),' Called')
+                  :statusBadge(b.status)
+                ),
+                h('td',null,
+                  h('button',{
+                    className:'btn btn-outline btn-sm',
+                    onClick:()=>setCalling(b.token),
+                    style:{color:b.token===calling?'var(--teal)':''}
+                  },'Call')
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── Patients ──────────────────────────────────────────────────────────────────
+function Patients({bookings}){
+  const patients=[
+    {id:2,name:'John Customer',email:'john@email.com',phone:'+91-98765-43210',bookings:bookings.filter(b=>b.patientId===2).length,lastVisit:'2026-05-28',avatar:'JC'},
+    {id:3,name:'Priya Sharma',email:'priya@email.com',phone:'+91-98765-12345',bookings:bookings.filter(b=>b.patientId===3).length,lastVisit:'2026-05-27',avatar:'PS'},
+    {id:4,name:'Ravi Mehta',email:'ravi@email.com',phone:'+91-99887-76543',bookings:1,lastVisit:'2026-05-20',avatar:'RM'},
+    {id:5,name:'Ananya Das',email:'ananya@email.com',phone:'+91-88776-65432',bookings:3,lastVisit:'2026-05-15',avatar:'AD'},
+  ];
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},h('h1',null,'Patient Records'),h('p',null,'Manage and view customer profiles')),
+      h('button',{className:'btn btn-primary'},h('i',{className:'ti ti-user-plus'}),' Add Patient')
+    ),
+    h('div',{className:'table-wrap'},
+      h('table',null,
+        h('thead',null,h('tr',null,
+          ['Patient','Contact','Total Visits','Last Visit','Status','Actions'].map(c=>h('th',{key:c},c))
+        )),
+        h('tbody',null,
+          patients.map(p=>
+            h('tr',{key:p.id},
+              h('td',null,h('div',{style:{display:'flex',alignItems:'center',gap:10}},
+                h('div',{style:{width:36,height:36,borderRadius:'50%',background:'linear-gradient(135deg,var(--teal-50),var(--blue-50))',border:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:700,color:'var(--teal-dark)'}},p.avatar),
+                h('div',null,
+                  h('div',{style:{fontWeight:600}},p.name),
+                  h('div',{style:{fontSize:11,color:'var(--text3)'}},p.email)
+                )
+              )),
+              h('td',null,h('div',null,p.phone,h('div',{style:{fontSize:11,color:'var(--text3)'}},p.email))),
+              h('td',null,h('span',{style:{fontWeight:700,color:'var(--teal)'}},p.bookings),' visits'),
+              h('td',null,p.lastVisit),
+              h('td',null,h('span',{className:'badge badge-success'},'Active')),
+              h('td',null,h('div',{style:{display:'flex',gap:4}},
+                h('button',{className:'btn btn-outline btn-sm'},h('i',{className:'ti ti-eye'})),
+                h('button',{className:'btn btn-outline btn-sm'},h('i',{className:'ti ti-mail'}))
+              ))
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── Analytics ─────────────────────────────────────────────────────────────────
+function Analytics(){
+  const[period,setPeriod]=useState('weekly');
+  const vals=analyticsData[period];
+  const maxV=Math.max(...vals);
+  const labels={daily:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],weekly:['W1','W2','W3','W4','W5','W6','W7'],monthly:['Jan','Feb','Mar','Apr','May','Jun','Jul']};
+  
+  const hours=Object.entries(analyticsData.hours);
+  const maxH=Math.max(...hours.map(([,v])=>v));
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},h('h1',null,'Analytics'),h('p',null,'Track performance trends and booking metrics'))
+    ),
+    h('div',{className:'stats-grid'},
+      [
+        {label:'Total This Month',val:'445',change:'+15%',up:true,color:'var(--teal)'},
+        {label:'Cancellation Rate',val:'8.2%',change:'-2.1%',up:true,color:'var(--success)'},
+        {label:'Avg Revenue/Day',val:'₹6,820',change:'+22%',up:true,color:'var(--blue)'},
+        {label:'No-Show Rate',val:'4.5%',change:'-1.2%',up:true,color:'var(--warning)'},
+      ].map((s,i)=>
+        h('div',{key:i,className:'stat-card'},
+          h('div',{className:'stat-val',style:{color:s.color}},s.val),
+          h('div',{className:'stat-label'},s.label),
+          h('div',{className:`stat-change ${s.up?'stat-up':'stat-down'}`},h('i',{className:`ti ti-trending-${s.up?'up':'down'}`}),s.change)
+        )
+      )
+    ),
+    h('div',{className:'card',style:{marginBottom:16}},
+      h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}},
+        h('div',{className:'card-title',style:{margin:0}},h('i',{className:'ti ti-chart-line'}),'Booking Volume Trend'),
+        h('div',{style:{display:'flex',gap:4}},
+          ['daily','weekly','monthly'].map(p=>
+            h('button',{key:p,className:`chip ${period===p?'active':''}`,onClick:()=>setPeriod(p)},
+              p.charAt(0).toUpperCase()+p.slice(1)
+            )
+          )
+        )
+      ),
+      h('div',{className:'bar-chart',style:{height:130}},
+        vals.map((v,i)=>
+          h('div',{key:i,className:'bar-wrap'},
+            h('div',{className:'bar-val'},v),
+            h('div',{className:'bar',style:{
+              height:`${v/maxV*110}px`,
+              background:`linear-gradient(180deg,var(--teal),var(--cyan-light))`
+            }}),
+            h('div',{className:'bar-label'},labels[period][i])
+          )
+        )
+      )
+    ),
+    h('div',{className:'grid-2'},
+      h('div',{className:'card'},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-clock'}),'Peak Hours'),
+        h('div',{className:'bar-chart',style:{height:100}},
+          hours.map(([hr,v])=>
+            h('div',{key:hr,className:'bar-wrap'},
+              h('div',{className:'bar',style:{
+                height:`${v/maxH*80}px`,
+                background:v>=15?'linear-gradient(180deg,var(--warning),#fbbf24)':'linear-gradient(180deg,var(--teal),var(--cyan-light))'
+              }}),
+              h('div',{className:'bar-label',style:{fontSize:9}},hr)
+            )
+          )
+        ),
+        h('div',{style:{marginTop:8,fontSize:12,color:'var(--text2)'}},
+          h('i',{className:'ti ti-flame',style:{color:'var(--warning)'}}),
+          ` Peak: ${analyticsData.peakHours[0]}`
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-chart-donut'}),'Services Breakdown'),
+        Object.entries(analyticsData.services).map(([svc,pct])=>
+          h('div',{key:svc,style:{marginBottom:10}},
+            h('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:3}},
+              h('span',{style:{fontWeight:600}},svc),
+              h('span',{className:'badge badge-teal'},`${pct}%`)
+            ),
+            h('div',{className:'progress'},
+              h('div',{className:'progress-fill',style:{
+                width:`${pct}%`,
+                background:pct>30?'linear-gradient(90deg,var(--teal),var(--cyan-light))':'linear-gradient(90deg,var(--blue-light),var(--cyan-light))'
+              }})
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── AI Insights ───────────────────────────────────────────────────────────────
+function AIInsights(){
+  const[loading,setLoading]=useState(false);
+  const[ran,setRan]=useState(false);
+  
+  const runAI=()=>{
+    setLoading(true);
+    setTimeout(()=>{setLoading(false);setRan(true);},1800);
+  };
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},
+        h('h1',null,'AI Analytics Engine'),
+        h('p',null,'Predictive scheduling · Trend analysis · Queue optimization')
+      ),
+      h('button',{className:'btn btn-primary',onClick:runAI,disabled:loading},
+        loading?h('i',{className:'ti ti-loader',style:{animation:'spin 1s linear infinite'}}):h('i',{className:'ti ti-brain'}),
+        loading?' Analyzing...':(ran?' Re-run Analysis':' Run AI Analysis')
+      )
+    ),
+    h('style',null,'@keyframes spin{to{transform:rotate(360deg)}}'),
+    h('div',{className:'grid-2',style:{marginBottom:16}},
+      [
+        {label:'Peak Hour Prediction',val:'10–11 AM',icon:'ti-clock-2',color:'var(--teal)',sub:'Tuesdays & Thursdays'},
+        {label:'Optimal Capacity',val:'24/day',icon:'ti-users',color:'var(--blue)',sub:'+6 over current'},
+        {label:'Revenue Forecast',val:'₹9,100',icon:'ti-trending-up',color:'var(--success)',sub:'Tomorrow (Thursday)'},
+        {label:'Queue Efficiency',val:'87%',icon:'ti-chart-line',color:'var(--warning)',sub:'+12% vs last week'},
+      ].map((s,i)=>
+        h('div',{key:i,className:'stat-card'},
+          h('div',{style:{display:'flex',alignItems:'center',gap:8,marginBottom:8}},
+            h('div',{style:{width:32,height:32,borderRadius:8,background:s.color+'18',display:'flex',alignItems:'center',justifyContent:'center'}},
+              h('i',{className:`ti ${s.icon}`,style:{color:s.color,fontSize:16}})
+            ),
+            h('div',{className:'stat-label'},s.label)
+          ),
+          h('div',{className:'stat-val',style:{color:s.color,fontSize:22}},s.val),
+          h('div',{style:{fontSize:11,color:'var(--text3)',marginTop:2}},s.sub)
+        )
+      )
+    ),
+    h('div',{className:'card',style:{marginBottom:16}},
+      h('div',{className:'card-title'},
+        h('div',{className:'ai-dot'}),
+        h('i',{className:'ti ti-sparkles',style:{color:'var(--teal)'}}),
+        'AI-Generated Recommendations'
+      ),
+      aiInsights.map((ins,i)=>
+        h('div',{key:i,className:'ai-card'},
+          h('div',{className:'ai-header'},
+            h('div',{style:{width:32,height:32,borderRadius:8,background:ins.color+'18',display:'flex',alignItems:'center',justifyContent:'center'}},
+              h('i',{className:`ti ${ins.icon}`,style:{color:ins.color,fontSize:16}})
+            ),
+            h('div',{style:{flex:1}},
+              h('div',{style:{fontWeight:700,fontSize:13}},ins.title),
+            ),
+            h('button',{className:'btn btn-outline btn-sm',style:{fontSize:11}},ins.action,' →')
+          ),
+          h('p',{style:{fontSize:12,color:'var(--text2)',lineHeight:1.6}},ins.text)
+        )
+      )
+    ),
+    h('div',{className:'card'},
+      h('div',{className:'card-title'},h('i',{className:'ti ti-chart-area'}),'Predicted Demand — Next 7 Days'),
+      h('div',{className:'bar-chart',style:{height:120}},
+        [
+          {day:'Thu',pred:28,actual:null},
+          {day:'Fri',pred:22,actual:null},
+          {day:'Sat',pred:18,actual:null},
+          {day:'Sun',pred:12,actual:null},
+          {day:'Mon',pred:30,actual:null},
+          {day:'Tue',pred:35,actual:null},
+          {day:'Wed',pred:33,actual:null},
+        ].map((d,i)=>
+          h('div',{key:i,className:'bar-wrap'},
+            h('div',{className:'bar-val'},d.pred),
+            h('div',{className:'bar',style:{
+              height:`${d.pred/35*100}px`,
+              background:'linear-gradient(180deg,#60a5fa,#93c5fd)',
+              border:'1.5px dashed var(--blue-light)',
+              opacity:.85
+            }}),
+            h('div',{className:'bar-label'},d.day)
+          )
+        )
+      ),
+      h('div',{style:{display:'flex',gap:12,marginTop:8,fontSize:11,color:'var(--text3)'}},
+        h('div',{style:{display:'flex',alignItems:'center',gap:4}},
+          h('div',{style:{width:12,height:8,borderRadius:2,background:'#93c5fd',border:'1px dashed var(--blue-light)'}}),
+          'AI Predicted'
+        )
+      )
+    )
+  );
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+function Settings({user}){
+  const[notif,setNotif]=useState({email:true,sms:false,push:true});
+  const[saved,setSaved]=useState(false);
+  
+  const save=()=>{setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  
+  return h('div',null,
+    h('div',{className:'page-header'},h('div',{className:'page-header-left'},h('h1',null,'Settings'),h('p',null,'Configure clinic preferences and integrations'))),
+    h('div',{className:'grid-2'},
+      h('div',{className:'card card-lg'},
+        h('h2',{style:{marginBottom:16}},h('i',{className:'ti ti-building',style:{color:'var(--teal)'}}), ' Clinic Info'),
+        h('div',{className:'form-group'},h('label',null,'Clinic Name'),h('input',{defaultValue:'CareFlow Clinic'})),
+        h('div',{className:'form-group'},h('label',null,'Address'),h('input',{defaultValue:'12 Wellness Street, Kolkata'})),
+        h('div',{className:'form-group'},h('label',null,'Phone'),h('input',{defaultValue:'+91-33-4567-8901'})),
+        h('div',{className:'form-group'},h('label',null,'Email'),h('input',{defaultValue:'care@careflowclinic.com'})),
+        h('button',{className:'btn btn-primary',onClick:save},saved?[h('i',{className:'ti ti-check'}), ' Saved!']:[h('i',{className:'ti ti-device-floppy'}), ' Save Changes'])
+      ),
+      h('div',null,
+        h('div',{className:'card card-lg',style:{marginBottom:12}},
+          h('h2',{style:{marginBottom:16}},h('i',{className:'ti ti-bell',style:{color:'var(--teal)'}}), ' Notifications'),
+          ['email','sms','push'].map(n=>
+            h('div',{key:n,style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}},
+              h('div',null,
+                h('div',{style:{fontWeight:600,textTransform:'capitalize'}},n==='sms'?'SMS':n==='push'?'Push Notifications':'Email Notifications'),
+                h('div',{style:{fontSize:11,color:'var(--text3)'}},n==='email'?'via SendGrid':n==='sms'?'via Twilio':'Browser push')
+              ),
+              h('label',{className:'switch'},
+                h('input',{type:'checkbox',checked:notif[n],onChange:()=>setNotif(p=>({...p,[n]:!p[n]}))}),
+                h('span',{className:'switch-slider'})
+              )
+            )
+          )
+        ),
+        h('div',{className:'card card-lg'},
+          h('h2',{style:{marginBottom:12}},h('i',{className:'ti ti-plug',style:{color:'var(--teal)'}}), ' Integrations'),
+          [
+            {name:'SendGrid',desc:'Email notifications',status:'Connected',icon:'ti-mail'},
+            {name:'MongoDB Atlas',desc:'Database',status:'Connected',icon:'ti-database'},
+            {name:'Node Cron',desc:'Background jobs',status:'Active',icon:'ti-clock'},
+            {name:'QR Generator',desc:'Check-in QR codes',status:'Enabled',icon:'ti-qrcode'},
+          ].map((int,i)=>
+            h('div',{key:i,style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:i<3?'1px solid var(--border)':'none'}},
+              h('div',{style:{display:'flex',alignItems:'center',gap:8}},
+                h('i',{className:`ti ${int.icon}`,style:{color:'var(--teal)',fontSize:16}}),
+                h('div',null,h('div',{style:{fontWeight:600,fontSize:13}},int.name),h('div',{style:{fontSize:11,color:'var(--text3)'}},int.desc))
+              ),
+              h('span',{className:'badge badge-success'},h('i',{className:'ti ti-circle-check'}),' ',int.status)
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+// ── Customer: Book Appointment ────────────────────────────────────────────────
+function BookAppointment({slots,bookings,setBookings,setSlots,user}){
+  const[step,setStep]=useState(1);
+  const[selectedService,setSelectedService]=useState('');
+  const[selectedSlot,setSelectedSlot]=useState(null);
+  const[notes,setNotes]=useState('');
+  const[done,setDone]=useState(null);
+  
+  const available=slots.filter(s=>s.status==='available'&&(!selectedService||s.service===selectedService));
+  
+  const confirm=()=>{
+    if(!selectedSlot) return;
+    const token=`A-00${bookings.length+5}`;
+    const newB={
+      id:`b${Date.now()}`,
+      patientName:user.name,
+      patientId:user.id,
+      slotId:selectedSlot.id,
+      service:selectedSlot.service,
+      doctor:selectedSlot.doctor,
+      date:selectedSlot.date,
+      time:selectedSlot.time,
+      status:'pending',
+      token,
+      qr:true,
+      createdAt:new Date().toISOString().slice(0,10),
+    };
+    setBookings(prev=>[...prev,newB]);
+    setSlots(prev=>prev.map(s=>s.id===selectedSlot.id?{...s,status:'booked'}:s));
+    setDone(newB);
+    setStep(3);
+  };
+  
+  if(step===3&&done){
+    return h('div',null,
+      h('div',{style:{textAlign:'center',padding:'32px 20px'}},
+        h('div',{style:{width:64,height:64,borderRadius:'50%',background:'var(--teal-100)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 16px'}},
+          h('i',{className:'ti ti-circle-check',style:{fontSize:36,color:'var(--teal)'}})
+        ),
+        h('h1',{style:{fontSize:22,marginBottom:6}},'Booking Confirmed! 🎉'),
+        h('p',{style:{color:'var(--text2)',marginBottom:24}}, 'Your appointment has been booked. Confirmation sent via email.')
+      ),
+      h('div',{className:'card',style:{maxWidth:360,margin:'0 auto',marginBottom:16}},
+        h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}},
+          h('h2',null,'Booking Details'),
+          h('span',{className:'badge badge-warning'},done.status)
+        ),
+        [
+          ['Token',h('span',{style:{fontWeight:800,color:'var(--teal)',fontSize:16}},done.token)],
+          ['Service',done.service],
+          ['Doctor',done.doctor],
+          ['Date',done.date],
+          ['Time',done.time],
+        ].map(([k,v],i)=>
+          h('div',{key:i,style:{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid var(--border)',fontSize:13}},
+            h('span',{style:{color:'var(--text2)',fontWeight:500}},k),
+            h('span',{style:{fontWeight:600}},v)
+          )
+        ),
+        h('div',{style:{marginTop:16,textAlign:'center'}},
+          h('div',{style:{marginBottom:8,fontSize:12,color:'var(--text2)',fontWeight:600}}, 'QR Check-in Code'),
+          h('div',{className:'qr-mock',style:{margin:'0 auto',width:80,height:80}})
+        )
+      ),
+      h('div',{style:{textAlign:'center'}},
+        h('button',{className:'btn btn-outline',onClick:()=>{setStep(1);setSelectedService('');setSelectedSlot(null);setDone(null);}},
+          h('i',{className:'ti ti-plus'}),' Book Another'
+        )
+      )
+    );
+  }
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},h('h1',null,'Book Appointment'),h('p',null,'View real-time available slots and confirm'))
+    ),
+    h('div',{style:{display:'flex',gap:8,marginBottom:20}},
+      [1,2].map(s=>
+        h('div',{key:s,style:{display:'flex',alignItems:'center',gap:6,flex:1,background:step>=s?'var(--teal-50)':'var(--surface2)',borderRadius:8,padding:'8px 12px',border:`1px solid ${step>=s?'var(--teal)':'var(--border)'}`}},
+          h('div',{style:{width:22,height:22,borderRadius:'50%',background:step>=s?'var(--teal)':'var(--border)',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700}},s),
+          h('span',{style:{fontSize:12,fontWeight:600,color:step>=s?'var(--teal-dark)':'var(--text3)'}},[,'Select Service & Slot','Confirm Booking'][s])
+        )
+      )
+    ),
+    step===1&&h('div',null,
+      h('div',{className:'card',style:{marginBottom:16}},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-stethoscope'}),'Choose Service'),
+        h('div',{style:{display:'flex',flexWrap:'wrap',gap:8}},
+          h('button',{className:`chip ${!selectedService?'active':''}`,onClick:()=>setSelectedService('')},'All Services'),
+          SERVICES.map(svc=>
+            h('button',{key:svc,className:`chip ${selectedService===svc?'active':''}`,onClick:()=>setSelectedService(svc)},svc)
+          )
+        )
+      ),
+      h('div',{className:'card'},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-calendar'}),'Available Slots — Today'),
+        h('div',{className:'slot-grid'},
+          slots.map(s=>
+            h('div',{
+              key:s.id,
+              className:`slot ${s.status==='booked'?'taken':''}${selectedSlot?.id===s.id?' selected':''}`,
+              onClick:()=>s.status!=='booked'&&setSelectedSlot(s),
+              title:s.service
+            },
+              h('div',{style:{fontWeight:700}},s.time),
+              h('div',{style:{fontSize:10,marginTop:2}},s.status==='booked'?'Taken':s.service.split(' ')[0])
+            )
+          )
+        ),
+        selectedSlot&&h('div',{className:'ai-card'},
+          h('div',{style:{fontSize:13}},
+            h('strong',null,selectedSlot.time),' · ',selectedSlot.service,' · ',selectedSlot.doctor,' · ',selectedSlot.duration,' min'
+          )
+        ),
+        h('div',{style:{marginTop:16,textAlign:'right'}},
+          h('button',{className:'btn btn-primary',onClick:()=>step<2&&selectedSlot&&setStep(2),disabled:!selectedSlot},
+            'Continue ',h('i',{className:'ti ti-arrow-right'})
+          )
+        )
+      )
+    ),
+    step===2&&h('div',null,
+      h('div',{className:'card',style:{marginBottom:12}},
+        h('div',{className:'card-title'},h('i',{className:'ti ti-user-check'}),'Confirm Your Booking'),
+        [
+          ['Service',selectedSlot.service],
+          ['Doctor',selectedSlot.doctor],
+          ['Date',selectedSlot.date],
+          ['Time',selectedSlot.time],
+          ['Duration',`${selectedSlot.duration} minutes`],
+          ['Patient',user.name],
+        ].map(([k,v],i)=>
+          h('div',{key:i,style:{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid var(--border)',fontSize:13}},
+            h('span',{style:{color:'var(--text2)',fontWeight:500}},k),
+            h('span',{style:{fontWeight:600}},v)
+          )
+        )
+      ),
+      h('div',{className:'form-group'},h('label',null,'Notes (optional)'),h('textarea',{placeholder:'Any special notes or concerns...',value:notes,onChange:e=>setNotes(e.target.value),rows:3})),
+      h('div',{style:{display:'flex',gap:8}},
+        h('button',{className:'btn btn-outline',onClick:()=>setStep(1)},h('i',{className:'ti ti-arrow-left'}),' Back'),
+        h('button',{className:'btn btn-primary',onClick:confirm},h('i',{className:'ti ti-calendar-check'}),' Confirm Booking')
+      )
+    )
+  );
+}
+
+// ── Customer: My Bookings ─────────────────────────────────────────────────────
+function MyBookings({bookings,setBookings,user}){
+  const mine=bookings.filter(b=>b.patientId===user.id);
+  
+  const cancel=(id)=>{
+    setBookings(prev=>prev.map(b=>b.id===id?{...b,status:'cancelled'}:b));
+  };
+  
+  return h('div',null,
+    h('div',{className:'page-header'},h('div',{className:'page-header-left'},h('h1',null,'My Bookings'),h('p',null,'View, cancel, or reschedule your appointments'))),
+    mine.length===0
+      ?h('div',{className:'empty'},h('i',{className:'ti ti-calendar-off'}),'No bookings found. Book your first appointment!')
+      :h('div',{style:{display:'flex',flexDirection:'column',gap:12}},
+        mine.map(b=>
+          h('div',{key:b.id,className:'card',style:{display:'flex',gap:16,flexWrap:'wrap',alignItems:'center'}},
+            h('div',{style:{
+              width:56,height:56,borderRadius:12,
+              background:b.status==='cancelled'?'var(--surface2)':'linear-gradient(135deg,var(--teal),var(--cyan-light))',
+              display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',color:'#fff',flexShrink:0
+            }},
+              h('div',{style:{fontSize:14,fontWeight:900}},b.token.split('-')[1]),
+              h('div',{style:{fontSize:9,opacity:.8}},b.token.split('-')[0])
+            ),
+            h('div',{style:{flex:1,minWidth:180}},
+              h('div',{style:{fontWeight:700,fontSize:15,marginBottom:2}},b.service),
+              h('div',{style:{fontSize:12,color:'var(--text2)'}},b.doctor,' · ',b.date,' at ',b.time),
+              h('div',{style:{marginTop:4}},statusBadge(b.status))
+            ),
+            b.status!=='cancelled'&&h('div',{style:{display:'flex',flexDirection:'column',gap:6,alignItems:'center'}},
+              h('div',{className:'qr-mock',style:{width:52,height:52}}),
+              h('div',{style:{fontSize:10,color:'var(--text3)'}}, 'QR Check-in')
+            ),
+            h('div',{style:{display:'flex',flexDirection:'column',gap:6}},
+              h('button',{className:'btn btn-outline btn-sm'},h('i',{className:'ti ti-edit'}),' Reschedule'),
+              b.status!=='cancelled'&&h('button',{className:'btn btn-danger btn-sm',onClick:()=>cancel(b.id)},h('i',{className:'ti ti-x'}),' Cancel')
+            )
+          )
+        )
+      )
+  );
+}
+
+// ── Customer: Queue Status ────────────────────────────────────────────────────
+function QueueStatus({bookings,user}){
+  const mine=bookings.filter(b=>b.patientId===user.id&&b.status!=='cancelled');
+  const serving='A-001';
+  
+  return h('div',null,
+    h('div',{className:'page-header'},h('div',{className:'page-header-left'},h('h1',null,'Queue Status'),h('p',null,'Live token tracking and estimated wait time'))),
+    h('div',{className:'queue-token'},
+      h('div',{style:{fontSize:12,opacity:.8,marginBottom:4}},h('i',{className:'ti ti-volume'}),' Currently Serving'),
+      h('div',{className:'queue-number'},serving),
+      h('div',{className:'queue-label'},'CareFlow Clinic · General Queue')
+    ),
+    mine.map(b=>
+      h('div',{key:b.id,className:'card',style:{marginBottom:12}},
+        h('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:8}},
+          h('div',null,
+            h('div',{style:{fontSize:12,color:'var(--text2)',marginBottom:2}}, 'Your Token'),
+            h('div',{style:{fontSize:32,fontWeight:900,color:'var(--teal)'}},b.token),
+            h('div',{style:{fontSize:12,color:'var(--text2)'}},b.service,' · ',b.time)
+          ),
+          h('div',{style:{textAlign:'right'}},
+            h('div',{style:{fontSize:12,color:'var(--text2)'}}, 'Est. Wait'),
+            h('div',{style:{fontSize:24,fontWeight:800,color:'var(--warning)'}},'~',
+              b.token==='A-001'?0:b.token==='A-002'?12:b.token==='A-003'?24:30,
+              ' min'
+            ),
+            statusBadge(b.status)
+          )
+        ),
+        h('div',{style:{marginTop:12}},
+          h('div',{style:{display:'flex',justifyContent:'space-between',fontSize:11,color:'var(--text3)',marginBottom:4}},
+            h('span','Queue progress'),
+            h('span',b.token===serving?'You\'re next!':'Waiting...')
+          ),
+          h('div',{className:'progress'},
+            h('div',{className:'progress-fill',style:{
+              width:`${b.token===serving?100:b.token==='A-002'?75:b.token==='A-003'?50:25}%`,
+              background:'linear-gradient(90deg,var(--teal),var(--cyan-light))'
+            }})
+          )
+        )
+      )
+    ),
+    mine.length===0&&h('div',{className:'empty'},h('i',{className:'ti ti-ticket-off'}),'No active tokens. Book an appointment first!')
+  );
+}
+
+// ── Customer Dashboard ────────────────────────────────────────────────────────
+function CustomerHome({user,bookings,setPage}){
+  const mine=bookings.filter(b=>b.patientId===user.id);
+  const upcoming=mine.filter(b=>b.status!=='cancelled');
+  
+  return h('div',null,
+    h('div',{className:'page-header'},
+      h('div',{className:'page-header-left'},
+        h('h1',null,`Hello, ${user.name.split(' ')[0]}! 👋`),
+        h('p',null,'Your health dashboard · CareFlow Clinic')
+      )
+    ),
+    h('div',{className:'stats-grid',style:{marginBottom:16}},
+      [
+        {label:'Upcoming',val:upcoming.length,icon:'ti-calendar',color:'var(--teal)'},
+        {label:'Total Visits',val:mine.length+3,icon:'ti-activity',color:'var(--blue)'},
+        {label:'Queue Position',val:upcoming[0]?.token||'—',icon:'ti-sort-ascending',color:'var(--warning)'},
+      ].map((s,i)=>
+        h('div',{key:i,className:'stat-card',style:{textAlign:'center'}},
+          h('i',{className:`ti ${s.icon}`,style:{fontSize:24,color:s.color,display:'block',marginBottom:6}}),
+          h('div',{className:'stat-val',style:{color:s.color,fontSize:24}},s.val),
+          h('div',{className:'stat-label'},s.label)
+        )
+      )
+    ),
+    h('div',{className:'card',style:{marginBottom:12}},
+      h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}},
+        h('div',{className:'card-title',style:{margin:0}},h('i',{className:'ti ti-calendar-upcoming'}),'Upcoming Appointments'),
+        h('button',{className:'btn btn-outline btn-sm',onClick:()=>setPage('mybookings')},'View All')
+      ),
+      upcoming.slice(0,3).map(b=>
+        h('div',{key:b.id,className:'notif'},
+          h('div',{style:{width:36,height:36,borderRadius:8,background:'var(--teal-50)',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--teal)',flexShrink:0}},
+            h('i',{className:'ti ti-stethoscope'})
+          ),
+          h('div',{style:{flex:1}},
+            h('div',{style:{fontWeight:600,fontSize:13}},b.service),
+            h('div',{style:{fontSize:11,color:'var(--text2)'}},b.doctor,' · ',b.time)
+          ),
+          h('div',null,
+            h('span',{className:'badge badge-teal',style:{marginBottom:4,display:'block'}},b.token),
+            h('div',{className:'notif-time'},b.date)
+          )
+        )
+      ),
+      upcoming.length===0&&h('div',{className:'empty'},h('i',{className:'ti ti-calendar-off'}),'No upcoming appointments')
+    ),
+    h('div',{className:'card'},
+      h('div',{className:'card-title'},h('i',{className:'ti ti-bell'}),'Recent Notifications'),
+      [
+        {msg:'Appointment confirmed: Dental Checkup on May 28',time:'2h ago',icon:'ti-circle-check',color:'var(--success)'},
+        {msg:'Reminder: Eye Exam tomorrow at 2:30 PM',time:'1d ago',icon:'ti-bell',color:'var(--warning)'},
+        {msg:'Your token A-001 is now being served',time:'3d ago',icon:'ti-volume',color:'var(--teal)'},
+      ].map((n,i)=>
+        h('div',{key:i,className:'notif'},
+          h('i',{className:`ti ${n.icon}`,style:{color:n.color,fontSize:18,flexShrink:0}}),
+          h('span',null,n.msg),
+          h('span',{className:'notif-time'},n.time)
+        )
+      )
+    )
+  );
+}
+
+// ── Customer History ──────────────────────────────────────────────────────────
+function History({bookings,user}){
+  const past=bookings.filter(b=>b.patientId===user.id);
+  return h('div',null,
+    h('div',{className:'page-header'},h('div',{className:'page-header-left'},h('h1',null,'Booking History'),h('p',null,'Past appointments and records'))),
+    past.length===0
+      ?h('div',{className:'empty'},h('i',{className:'ti ti-history'}),'No history yet')
+      :h('div',{className:'table-wrap'},
+        h('table',null,
+          h('thead',null,h('tr',null,
+            ['Token','Service','Doctor','Date','Time','Status'].map(c=>h('th',{key:c},c))
+          )),
+          h('tbody',null,
+            past.map(b=>
+              h('tr',{key:b.id},
+                h('td',null,h('span',{style:{fontWeight:700,color:'var(--teal)'}},b.token)),
+                h('td',null,b.service),
+                h('td',null,b.doctor),
+                h('td',null,b.date),
+                h('td',null,b.time),
+                h('td',null,statusBadge(b.status))
+              )
+            )
+          )
+        )
+      )
+  );
+}
+
+// ── App Shell ─────────────────────────────────────────────────────────────────
+function App(){
+  const[user,setUser]=useState(null);
+  const[page,setPage]=useState('');
+  const[slots,setSlots]=useState(initialSlots);
+  const[bookings,setBookings]=useState(initialBookings);
+  
+  const login=(u)=>{
+    setUser(u);
+    setPage(u.role==='admin'?'dashboard':'home');
+  };
+  
+  const logout=()=>{setUser(null);setPage('');};
+  
+  if(!user) return h(LoginScreen,{onLogin:login});
+  
+  const notifCount=bookings.filter(b=>b.status==='pending').length;
+  
+  const renderPage=()=>{
+    if(user.role==='admin'){
+      switch(page){
+        case 'dashboard': return h(AdminDashboard,{bookings});
+        case 'slots': return h(SlotManager,{slots,setSlots});
+        case 'bookings': return h(AllBookings,{bookings,setBookings});
+        case 'queue': return h(LiveQueue,{bookings});
+        case 'patients': return h(Patients,{bookings});
+        case 'analytics': return h(Analytics,null);
+        case 'ai': return h(AIInsights,null);
+        case 'settings': return h(Settings,{user});
+        default: return h(AdminDashboard,{bookings});
+      }
+    } else {
+      switch(page){
+        case 'home': return h(CustomerHome,{user,bookings,setPage});
+        case 'book': return h(BookAppointment,{slots,setSlots,bookings,setBookings,user});
+        case 'mybookings': return h(MyBookings,{bookings,setBookings,user});
+        case 'queue-status': return h(QueueStatus,{bookings,user});
+        case 'history': return h(History,{bookings,user});
+        default: return h(CustomerHome,{user,bookings,setPage});
+      }
+    }
+  };
+  
+  return h('div',{className:'app-shell'},
+    h(TopBar,{user,onLogout:logout,notifCount}),
+    h('div',{className:'main-layout'},
+      h(Sidebar,{user,page,setPage}),
+      h('div',{className:'content'},renderPage())
+    )
+  );
+}
+
+ReactDOM.render(h(App,null), document.getElementById('root'));
+</script>
+</body>
+</html>
